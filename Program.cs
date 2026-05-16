@@ -1,4 +1,4 @@
-// код для телеграм бота игры в кретсики нолики
+// код для телеграм бота игры в крестики нолики
 
 using System;
 using System.Threading;
@@ -10,6 +10,8 @@ using Telegram.Bot.Types.Enums;
 
 class Program
 {
+    static Dictionary<lomg, Game> games = new();
+    
     static async Task Main()
     {
       string token = "<<TGTOKEN>>";
@@ -54,10 +56,59 @@ class Program
     }
     if (messageText == "/play")
     {
+        var game = new Game();
+        games[chatId] = game;
+        
       await botClient.SendTextMessageAsync(
-        chatId, "Игра скоро начнется",
+        chatId, "Игра началась! Ты играешь за Х",
+        replyMarkup: GetGameKeyBoard(game),
         cancellationToken : cancellationToken);
     }
+
+    if (update.Type == UpdateType.CallbackQuery)
+    {
+        var callback = update.CallbackQuery!;
+        var chatId = callback.Message!.Chat.Id;
+
+        if (!games.ContainsKey(chatId))
+            return;
+        var game = games[chatId];
+        var parts = callback.Data.Split('.');
+        int row = int.Parse(parts[0]);
+        int col = int.Parse(parts[1]);
+        if (!game.MakeMove(row,col,'X'))
+            return;
+        if (game.CheckWin('X'))
+        {
+            await botClient.EditMessageTextAsync(
+                chatId,
+                callback.Message.MessageId,
+                "Ты победил!",
+                replyMarkup: GetGameKeyboard(game),
+                cancellationToken: cancellationTokem);
+
+            games.Remove(chatId);
+            return;
+        }
+
+        if (game.IsBoardFull())
+        {
+            await botClient.EditMessageTextAsync(
+                chatId,
+                callback.Message.MessageId,
+                "Ничья",
+                replyMarkup: GetGameKeyboard(game),
+                cancellationToken: cancellationToken);
+
+            games.Remove(chatId);
+            return;
+        }
+        await botClient.EditMessageReplyMarkupAsync(
+            chatId,
+            callback.Message.MessageId,
+            replyMarkup: GetGameKeyboard(game),
+            cancellationToken: cancellationToken);
+        
   }
   static Task HandleErrorAsync(
     ITelegramBotClient botClient,
