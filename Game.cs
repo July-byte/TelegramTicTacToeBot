@@ -1,4 +1,6 @@
 using System.Text;
+using System.Collections.Generic;
+
 public class Game
 {
   public char[,] Board { get; private set; } = new char[3, 3];
@@ -40,3 +42,22 @@ public class Game
     return true;
   }
 }
+
+using System;
+public void MakeBotMove()
+{
+  var ramdom = new Random();
+  var emptyCells = new List<(int row, int col)>();
+  for (int i = 0; i < 3; i++)
+    for (int j = 0; j < 3; j++)
+      if (Board[i, j] == ' ')
+        emptyCells.Add((i, j));
+
+  if (emptyCells.Count == 0)
+    return;
+
+  var move = emptyCells[random.Next(emptyCells.Count)];
+  Board[move.row, move.col] = '0';
+}
+
+
