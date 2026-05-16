@@ -99,7 +99,7 @@ class Program
                 await botClient.EditMessageTextAsync(
                     chatId,
                     callback.Message.MessageId,
-                    "Ты победил 🎉",
+                    "Ты победил!",
                     replyMarkup: GetGameKeyboard(game),
                     cancellationToken: cancellationToken);
 
@@ -112,7 +112,7 @@ class Program
                 await botClient.EditMessageTextAsync(
                     chatId,
                     callback.Message.MessageId,
-                    "Ничья 🤝",
+                    "Ничья",
                     replyMarkup: GetGameKeyboard(game),
                     cancellationToken: cancellationToken);
 
