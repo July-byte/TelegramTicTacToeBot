@@ -10,6 +10,29 @@ using Telegram.Bot.Types.Enums;
 
 class Program
 {
+    using Telegram.Bot.Types.ReplyMarkups;
+
+static InlineKeyboardMarkup GetGameKeyboard(Game game)
+{
+    var buttons = new List<InlineKeyboardButton[]>();
+
+    for (int i = 0; i < 3; i++)
+    {
+        var row = new List<InlineKeyboardButton>();
+
+        for (int j = 0; j < 3; j++)
+        {
+            string text = game.Board[i, j] == ' ' ? "⬜" : game.Board[i, j].ToString();
+            string callbackData = $"{i},{j}";
+
+            row.Add(InlineKeyboardButton.WithCallbackData(text, callbackData));
+        }
+
+        buttons.Add(row.ToArray());
+    }
+
+    return new InlineKeyboardMarkup(buttons);
+}
     static Dictionary<lomg, Game> games = new();
     
     static async Task Main()
